@@ -17,3 +17,4 @@ emmeans(model, pairwise ~ factor1)
 
 # emtrends
 emtrends(model, ~factor1, var="covariate")
+
