@@ -3,4 +3,5 @@ Examples and code used in open workshop for statistics and using R at AU Viborg.
 
 # Collaborators 
 Maarit Mäenpää (MaaritIMaenpaa, m.maenpaa@agro.au.dk) (Maintainer)
+
 Franca Giannini Kurina (francagiannini, francagk@agro.au.dk)
