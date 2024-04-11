@@ -69,14 +69,29 @@ summary(model)
 emmeans(model, ~factor1)
 emmeans(model, pairwise ~ factor1)
 
+emmeans(model, ~gen)
+emmeans(model, pairwise ~ gen)
+
+table(chakravertti.factorial$gen, chakravertti.factorial$date)
+
 # For interactions 
 
 # Explore what is the difference between these two options:
 emmeans(model, ~factor1|factor2)
 emmeans(model, ~factor1:factor2)
 
+emmeans(model, ~gen|date)
+emmeans(model, ~gen:date)
+emmeans(model, ~date|gen)
+
+
 # Also explore with this notation:
 emmeans(model, pairwise ~ factor1|factor2)
+
+emmeans(model, pairwise ~gen|date)
+emmeans(model, pairwise ~gen:date)
+emmeans(model, pairwise ~date|gen)
+
 
 # For covariates
 
@@ -91,6 +106,9 @@ emtrends(model, ~factor1, var="covariate")
 
 # Save the output of emmeans to an object
 em_factors <- emmeans(model, pairwise ~ factor1|factor2)
+
+em_factors <- emmeans(model, pairwise ~gen|date)
+
 
 # Packages needed (for cld-function)
 library(multcomp)
