@@ -2,6 +2,7 @@
 library(emmeans)
 
 # For further information:
+# https://bcdudek.net/anova/beginning-to-explore-the-emmeans-package-for-post-hoc-tests-and-contrasts.html
 # https://cran.r-project.org/web/packages/emmeans/vignettes/basics.html
 # https://cran.r-project.org/web/packages/emmeans/vignettes/interactions.html
 
