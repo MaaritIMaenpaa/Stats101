@@ -1,4 +1,5 @@
 # Packages
+install.packages("emmeans")
 library(emmeans)
 
 # For further information:
@@ -46,12 +47,18 @@ model <- lm(response ~ factor1 + factor2 + covariate +
               factor2:covariate,
             data=dataset)
 
+model <- lm(yield ~ gen + date + gen:date,
+            data=chakravertti.factorial)
+
+
 #
 #
 # Post-hoc exploration of a model
 
 # First, check if the model says there are any differences between factor levels
 anova(model)
+
+summary(model)
 # If there are, you can continue looking further into what these differences are,
 # but if there are not - you don't need post-hoc comparisons.
 
