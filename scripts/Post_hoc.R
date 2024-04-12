@@ -47,6 +47,7 @@ model <- lm(response ~ factor1 + factor2 + covariate +
               factor2:covariate,
             data=dataset)
 
+# Using the example data
 model <- lm(yield ~ gen + date + gen:date,
             data=chakravertti.factorial)
 
@@ -69,6 +70,7 @@ summary(model)
 emmeans(model, ~factor1)
 emmeans(model, pairwise ~ factor1)
 
+# Example data
 emmeans(model, ~gen)
 emmeans(model, pairwise ~ gen)
 
@@ -80,6 +82,7 @@ table(chakravertti.factorial$gen, chakravertti.factorial$date)
 emmeans(model, ~factor1|factor2)
 emmeans(model, ~factor1:factor2)
 
+# Example data
 emmeans(model, ~gen|date)
 emmeans(model, ~gen:date)
 emmeans(model, ~date|gen)
@@ -88,6 +91,7 @@ emmeans(model, ~date|gen)
 # Also explore with this notation:
 emmeans(model, pairwise ~ factor1|factor2)
 
+# Example data
 emmeans(model, pairwise ~gen|date)
 emmeans(model, pairwise ~gen:date)
 emmeans(model, pairwise ~date|gen)
@@ -107,6 +111,7 @@ emtrends(model, ~factor1, var="covariate")
 # Save the output of emmeans to an object
 em_factors <- emmeans(model, pairwise ~ factor1|factor2)
 
+# Example
 em_factors <- emmeans(model, pairwise ~gen|date)
 
 
