@@ -1,10 +1,10 @@
 # Stats101
 Examples and code used in open workshop for statistics and using R at AU Viborg. 
 
-##### scripts
+#### scripts
 Scripts created and used in the sessions of the R workshop.
 
-##### example_code
+#### example_code
 Templates for R code for various purposes.
 
 # Collaborators 
