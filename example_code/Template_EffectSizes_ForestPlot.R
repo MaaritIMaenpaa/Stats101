@@ -9,6 +9,7 @@
 # colour, shape and facets. Modify the figure accordingly. 
 # This is one example of a colour/shape scheme. Please modify the aesthetic features of the plot as you please. 
 
+# Example- 
 
 # Packages ----
 library(agridat) # For example dataset
