@@ -1,0 +1,210 @@
+---
+title: "Multitrait BLUP with metan"
+author: "Maarit Mäenpää"
+date: "`r Sys.Date()`"
+output:
+  html_document: default
+  pdf_document: default
+---
+
+A case of a single experiment: One environment, multiple genotypes.
+
+### Packages needed in the example
+
+```{r include=T, echo=T, message=F, warning=F}
+
+library(agridat) # for dataset
+library(dplyr)
+library(metan)
+library(ggplot2)
+
+```
+
+# Prepare an example dataset
+
+Using barrero.maize from agridat. This is a multi-year, multi-trait, multi-environment dataset, where for the sake of an example, we extract one year and one location. We omit all missing values.
+
+```{r include=T, echo=T}
+
+# Load in the data
+data(barrero.maize)
+head(barrero.maize)
+
+# For details of the data
+#?barrero.maize
+
+# Select one location in one year
+maize.BA <- filter(barrero.maize, loc=="BA" & year=="2000")
+
+# Omit all NA's
+maize.BA <- na.omit(maize.BA)
+
+# Make sure genotypes that are removed due to missing data are not stored as a level in the genotype by reassigning the factor
+maize.BA$gen <- factor(maize.BA$gen)
+
+```
+
+# Run a model with metan
+
+Need to specify the dataset (maize.BA), the column identifying the genotype (gen), replication (rep), and the response variables of interest. Here, there are 8 traits measured. 
+
+```{r include=T, echo=T, warning=FALSE, message=FALSE}
+
+mod <-
+  gamem(maize.BA, 
+        gen=gen, 
+        rep=rep, 
+        resp=c(daystoflower, plantheight, earheight, population, lodged, moisture, testweight, yield))
+
+```
+
+Note that the output after running the model indicates a brief overview of which traits differ between genotypes. In this case only the trait "lodged" did not differentiate between different genotypes.
+
+
+# BLUPs
+
+
+Plot the individual BLUPs (best linear unbiased predictors) from the model. 
+
+```{r include=T, echo=T}
+
+plot_blup(mod, var = "daystoflower")
+plot_blup(mod, var = "plantheight")
+plot_blup(mod, var = "earheight")
+plot_blup(mod, var = "population")
+plot_blup(mod, var = "lodged")
+plot_blup(mod, var = "moisture")
+plot_blup(mod, var = "testweight")
+plot_blup(mod, var = "yield")
+
+```
+
+# Assess the model
+
+### Broad sense heritability
+
+Proportion of phenotypic variance due to genetic factors.
+
+```{r include=T, echo=T}
+get_model_data(mod, "h2") # broad-sense heritability
+```
+
+### Model details
+
+**Ngen** - The number of genetic entries or genotypes evaluated.
+
+**OVmean** - The overall mean value for each trait across all genotypes.
+
+**Min** - The minimum observed value for each trait, with the genotype and replication noted.
+
+**Max** - The maximum observed value for each trait, with the genotype and replication noted.
+
+**MinGEN** - The minimum genetic value for each trait, indicating the lowest value among the genotypes.
+
+**MaxGEN** - The maximum genetic value for each trait, indicating the highest value among the genotypes.
+
+```{r include=T, echo=T}
+
+get_model_data(mod, "details") # General details
+```
+### Likelihood ratio tests
+
+These tests give the p-values (remember, p-values are not everything!) for whether the traits assessed show differences in the genotypes. 
+
+```{r include=T, echo=T}
+get_model_data(mod, "lrt") # P-values for genotype differences within traits
+```
+
+### Genetic parameters 
+
+**Gen_var** - Genetic variance, indicating the variability in traits due to genetic differences.
+
+**Gen (%)** - Percentage of total variance attributed to genetic factors.
+
+**Res_var** - Residual variance, representing the variability not explained by genetic or block effects.
+
+**Res (%)** - Percentage of total variance attributed to residual factors.
+
+**Phen_var** - Phenotypic variance, the total observed variability in the traits.
+
+**H2** - Broad-sense heritability, indicating the proportion of phenotypic variance due to genetic factors.
+
+**h2mg** - Narrow-sense heritability, showing the proportion of phenotypic variance due to additive genetic factors.
+
+**Accuracy** - The accuracy of the heritability estimates.
+
+**CVg** - Coefficient of genetic variation, a measure of genetic diversity relative to the mean.
+
+**CVr** - Coefficient of residual variation, indicating the residual variability relative to the mean.
+
+**CV ratio** - Ratio of genetic to residual variation, providing insight into the relative contributions of genetic and residual factors
+
+```{r include=T, echo=T}
+get_model_data(mod, "genpar") # Genetic parameters
+```
+
+### BLUPs
+
+I.e. predicted means (=point estimates for genotype mean in each trait)
+
+```{r include=T, echo=T}
+get_model_data(mod, "blupg") # Predicted means
+
+```
+
+# FAI-index
+
+Multitrait comparison. The method is documented first here: https://doi.org/10.1111/gcbb.12443
+
+```{r include=T, echo=T}
+
+FAI <- fai_blup(mod)
+
+plot(FAI)
+
+```
+
+## FAI ranking and illustrating selected genotypes
+
+Here, genotype selection is not purely for the optimal top performing genotypes, but for diversifying the best- and worst performing genotypes. In this case, we take the top and bottom 2 genotypes, and randomly choose 4 from the middle. 
+
+
+```{r include=T, echo=T}
+
+# Save BLUP data for individual traits
+metan_blups <- data.frame(get_model_data(mod, "ranef")$GEN)
+
+# Extract FAI indexes
+FAI_results <- FAI$FAI
+
+# Change the name of Genotype to combine the two dataframes
+names(metan_blups)[1] <- "Genotype"
+
+# Combine dataframes
+FAI_results <- left_join(FAI_results, metan_blups, by="Genotype")
+
+# Create a dataframe to select genotypes
+selected <- data.frame(matrix(NA, nrow = 0, ncol = 25))
+colnames(selected) <- colnames(FAI_results)
+
+# Top and bottom 5
+selected <- rbind(selected, 
+                  FAI_results[which(FAI_results$ID1 %in% tail(sort(FAI_results$ID1),2)==T),]
+)
+selected <- rbind(selected, 
+                  FAI_results[which(FAI_results$ID1 %in% head(sort(FAI_results$ID1),2)==T),]
+)
+
+# Random selection from the middle
+rselect <- sample(FAI_results[which(FAI_results$Genotype %in% selected$Genotype==FALSE),]$Genotype, size = 4, replace = F)
+selected <- rbind(selected, FAI_results[which(FAI_results$Genotype %in% rselect ==T),])
+
+# Illustrate selection
+ggplot(FAI_results, aes(x=ID2, y=ID1)) + 
+  geom_point() + 
+  geom_point(data=selected, colour="red")
+
+
+```
+
+The figure above illustrates the ranked order of the genotypes. The red are selected, and black are not. Distance in ID1 and ID2 illustrate difference between the genotypes. 
