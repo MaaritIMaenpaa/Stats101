@@ -190,3 +190,5 @@ eu_sh |>
 # You?
 
 # Image data analysis https://dahtah.github.io/imager/imager.html
+# time serie data lubridate https://www.r-bloggers.com/2024/09/mastering-date-and-time-data-in-r-with-lubridate/ 
+#; https://r4ds.had.co.nz/dates-and-times.html
