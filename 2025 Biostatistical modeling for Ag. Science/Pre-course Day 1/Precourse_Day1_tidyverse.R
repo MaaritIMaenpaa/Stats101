@@ -39,6 +39,25 @@ summary(cucumber)
 cucumber_guardian <- cucumber %>%
   filter(gen=="Guardian")
 
+
+#
+#
+# Changing one variable's class ----
+cucumber <- cucumber %>%
+  mutate(gen = as.factor(gen))
+
+str(cucumber)
+
+#
+#
+# Changing variable classes/modes in multiple variables at a time ----
+cucumber <- cucumber %>%
+  mutate(across(c(loc, gen), factor),
+         across(c(row, col, yield), as.numeric))
+
+str(cucumber)
+
+
 #
 #
 # Calculating descriptive statistics ----
