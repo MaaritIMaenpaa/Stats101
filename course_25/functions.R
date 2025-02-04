@@ -77,7 +77,7 @@ do.call(rbind, soc_t)
 data.frame("soc_t"=do.call(rbind, soc_t),
          "soc_ad"=do.call(rbind, soc_ad))
 
-# with apply
+# with apply for more of the family see https://www.rforecology.com/post/how-to-use-apply-functions/
 res_apply <- apply(input, 1, function(row) {alt_soc_calc(soc = row["soc"], 
                                            bd = row["bd"], 
                                            depth = 20, 
