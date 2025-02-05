@@ -61,6 +61,31 @@ blups |> ggplot(aes(x=reorder(clon,yield_blup), # we define the clones in x axis
 # made sense to perform a random effect to the slope (sowing date effect).
 # The data would not be openly available but yes the code
 
+## reading data
+# data_g <- read_xlsx("example_data/SANAZNIRcsv_ws.xlsx",
+#                     na = c("NA","."))
+# 
+# head(data_g)
+# str(data_g)
+# #fixed effect model
+# mod_fix_sd <- lm(Proteiness ~sowingdates,data = data_g)
+# 
+# summary(mod_fix_sd)
+# 
+# # random effect on the average 
+# mod_ran <- lmer(Proteiness ~ sowingdates +(1|genotypes),data = data_g)
+# 
+# summary(mod_ran)
+# 
+# mod_ran
+# 
+# # getting the BLUPs
+# mod_ran
+# ranef(mod_ran)
+# 
+# # random effect on average and slope
+# mod_ran_sd <- lmer(Proteiness ~ sowingdates +(sowingdates|genotypes),data = data_g)
+
 # # random effect on average and slope
 # mod_ran_sd <- lmer(Proteiness ~ sowingdates +(sowingdates|genotypes),
 #                    data = data_g)
