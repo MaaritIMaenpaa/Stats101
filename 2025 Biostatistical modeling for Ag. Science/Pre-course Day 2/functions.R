@@ -1,6 +1,4 @@
-# -------------------------------------------------
-# Soil Organic Carbon (SOC) Stock Calculation
-# -------------------------------------------------
+# Soil Organic Carbon (SOC) Stock Calculation -----
 
 # Function to calculate SOC stock (tn/ha)
 calc_stock <- function(soc, bd, depth) {
@@ -15,9 +13,7 @@ calc_stock <- function(soc, bd, depth) {
 calc_stock(1.7, 1.2, 20)
 calc_stock(2.0, 1.3, 20)
 
-# -------------------------------------------------
-# SOC Stock Calculation with Rock Fragment Adjustment
-# -------------------------------------------------
+# SOC Stock Calculation with Rock Fragment Adjustment -----
 
 # Function to calculate SOC stock considering rock fragments (rf)
 calc_stock_adjrf <- function(soc, bd, depth, rf) {
@@ -32,9 +28,7 @@ calc_stock_adjrf <- function(soc, bd, depth, rf) {
 calc_stock_adjrf(1.7, 1.2, 20, 0.12)
 calc_stock_adjrf(2.0, 1.3, 20, 0.12)
 
-# -------------------------------------------------
-# Combining Functions for SOC Stock Calculation
-# -------------------------------------------------
+# Combining Functions for SOC Stock Calculation ----
 
 # Function to compute SOC stock with and without rock fragment adjustment
 alt_soc_calc <- function(soc, bd, depth, rf) {
@@ -46,9 +40,7 @@ alt_soc_calc <- function(soc, bd, depth, rf) {
 # Example usage of alt_soc_calc function
 alt_soc_calc(1.7, 1.2, 20, 0.12)
 
-# -------------------------------------------------
-# Bulk Calculation of SOC Stock for Multiple Values
-# -------------------------------------------------
+# Bulk Calculation of SOC Stock for Multiple Values ----
 
 # Define sample size
 n <- 100
@@ -82,9 +74,7 @@ results_df <- data.frame(
   "soc_ad" = do.call(rbind, soc_ad)
 )
 
-# -------------------------------------------------
-# Using apply() Function for Vectorized Calculation
-# -------------------------------------------------
+# Using apply() Function for Vectorized Calculation ----
 
 # Alternative approach using apply() function
 res_apply <- apply(input, 1, function(row) {
@@ -113,9 +103,7 @@ res_apply <- apply(input, 1, function(row) {
 # Assign column names
 colnames(res_apply) <- c("soc_t", "soc_ad")
 
-# -------------------------------------------------
-# Importing Multiple Files from a Directory
-# -------------------------------------------------
+# Importing Multiple Files from a Directory ----
 
 # Define folder path (modify as needed)
 folder_list <- list.files("O:/Tech_AGRO/Jornaer/Franca/ctool_II_hal", 
