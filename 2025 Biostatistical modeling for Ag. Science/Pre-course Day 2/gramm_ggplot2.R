@@ -1,18 +1,13 @@
-# -------------------------------------------------
-# Data Analysis and Visualization with Edlinger 2022 Dataset
-# -------------------------------------------------
+# Data Analysis and Visualization with Edlinger 2022 Dataset--------
 
-# Load Required Packages
+## Load Required Packages ----
 library(tidyverse)  # Data wrangling and visualization
 library(readxl)  # Read Excel files
 library(ggpubr)  # Arrange multiple plots
-library(giscoR)  # European geospatial data
+library(eurostat)  # European geospatial data
 library(sf)  # Spatial data handling
 
-# -------------------------------------------------
-# Step 1: Load the Dataset
-# -------------------------------------------------
-
+## Step 1: Load the Dataset ----
 # Reference: https://onlinelibrary.wiley.com/doi/10.1111/gcb.16677
 # Download the dataset and save it as 'mwd_soc_diggdeeper.xlsx'
 
@@ -27,9 +22,7 @@ str(edlinger_data)  # Display structure of dataset
 summary(edlinger_data)  # Summary statistics of all columns
 sum(is.na(edlinger_data))  # Count missing values
 
-# -------------------------------------------------
-# Step 2: Data Visualization with ggplot2
-# -------------------------------------------------
+## Step 2: Data Visualization with ggplot2 ------
 
 # Scatter Plot: Rough map of the data points
 ggplot(data = edlinger_data, aes(x = Lat, y = Long)) +
@@ -62,11 +55,12 @@ ggplot(data = edlinger_data, aes(x = MWD, fill = Land_use)) +
   labs(title = "Density Plot of MWD by Land Use",
        y = "Density")
 
-# -------------------------------------------------
-# Step 3: Customizing Themes
-# -------------------------------------------------
+
+## Step 3: Customizing Themes ---------
+
 
 # Scatter Plot with Minimal Theme
+#edlinger_plot
 ggplot(data = edlinger_data, aes(x = Lat, y = Long)) +
   geom_point() + 
   theme_minimal()
@@ -74,29 +68,25 @@ ggplot(data = edlinger_data, aes(x = Lat, y = Long)) +
 # Save plot as a PNG file
 ggsave("edlinger_plot.png", edlinger_plot)
 
-# -------------------------------------------------
-# Step 4: Faceting
-# -------------------------------------------------
+
+## Step 4: Faceting ---------------------
 
 # Boxplot faceted by country
 ggplot(data = edlinger_data, aes(x = Land_use, y = MWD)) +
   geom_boxplot() +
   facet_wrap(~Country)  # Create separate plots for each country
 
-# -------------------------------------------------
-# Step 5: Adding Trend Lines
-# -------------------------------------------------
+## Step 5: Adding Trend Lines ----
 
 # Scatter plot with linear regression line
 ggplot(data = edlinger_data, aes(x = Clay, y = MWD, col = Land_use)) +
   geom_point() +
-  geom_smooth(method = "lm")  # Add a linear regression line
+  geom_smooth()  # Add a linear regression line #method = "lm"
 
-# -------------------------------------------------
-# Step 6: Creating Multiple Panels with ggpubr
-# -------------------------------------------------
+## Step 6: Creating Multiple Panels with ggpubr --------
 
 # Arrange multiple plots into a single panel
+#combined_plot <- 
 ggarrange(p1, p2, 
           nrow = 2,  # Two rows
           heights = c(2, 1))  # Different heights for plots
@@ -104,12 +94,11 @@ ggarrange(p1, p2,
 # Save the combined plot
 ggsave("combined_plot.png", combined_plot)
 
-# -------------------------------------------------
-# Step 7: Mapping Data on a European Map
-# -------------------------------------------------
+## Step 7: Mapping Data on a European Map-----------
 
 # Load European shapefile
-eu_sh <- get_eurostat_geospatial(resolution = 10, nuts_level = 0)
+eu_sh <- 
+  get_eurostat_geospatial(resolution = 10, nuts_level = 0)
 
 # Convert dataset to a spatial format (sf)
 edlinger_data_sf <- edlinger_data |> 
@@ -123,9 +112,7 @@ eu_sh |>
   scale_y_continuous(limits = c(35, 65)) +
   geom_sf(data = edlinger_data_sf, aes(color = MWD))
 
-# -------------------------------------------------
-# Step 8: Advanced Mapping for a Stylish Visualization
-# -------------------------------------------------
+## Step 8: Advanced Mapping for a Stylish Visualization -----
 
 # "Friday Night Crazy" Version 🎨
 ggplot(eu_sh) +
@@ -146,9 +133,7 @@ ggplot(eu_sh) +
   theme(plot.background = element_rect(fill = "black"),
         legend.position = "none")
 
-# -------------------------------------------------
 # Alternative Mapping Styles
-# -------------------------------------------------
 
 # DeepSeek Version
 eu_sh |>
@@ -185,9 +170,8 @@ eu_sh |>
     panel.grid = element_blank()
   )
 
-# -------------------------------------------------
-# Additional Resources
-# -------------------------------------------------
+# Additional Resources -------------
+# 🤗
 # Image Data Analysis: https://dahtah.github.io/imager/imager.html
 # Time Series Analysis in R:
 #   - https://www.r-bloggers.com/2024/09/mastering-date-and-time-data-in-r-with-lubridate/
