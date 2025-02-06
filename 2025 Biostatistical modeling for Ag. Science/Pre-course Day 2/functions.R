@@ -1,10 +1,16 @@
 # Soil Organic Carbon (SOC) Stock Calculation -----
 
 # Function to calculate SOC stock (tn/ha)
-calc_stock <- function(soc, bd, depth) {
+#Functions can be broken down into three components: 
+#arguments, body, and environment.
+#
+
+calc_stock <- function(soc, bd, depth) { # formals(), the list of arguments that control how you call the function.
   
   # SOC stock formula: SOC (%) * BD (g/cm3) * depth (cm) * 10/100
-  soc_stock <- soc * bd * depth * 10 / 100
+  soc_stock <- soc * bd * depth * 10 / 100 #body(), the code inside the function.
+  
+  
   
   return(soc_stock)
 }
@@ -12,6 +18,14 @@ calc_stock <- function(soc, bd, depth) {
 # Example usage of calc_stock function
 calc_stock(1.7, 1.2, 20)
 calc_stock(2.0, 1.3, 20)
+
+# explore the function 
+
+formals(calc_stock)
+
+body(calc_stock)
+
+environment(calc_stock)
 
 # SOC Stock Calculation with Rock Fragment Adjustment -----
 
