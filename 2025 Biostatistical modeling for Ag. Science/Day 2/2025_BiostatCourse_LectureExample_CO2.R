@@ -6,6 +6,7 @@
 library(ggplot2)
 library(dplyr)
 library(minpack.lm) # For a non-linear model
+library(DHARMa) 
 
 #
 #
@@ -153,4 +154,13 @@ p3
 
 #ggsave("CO2_nls.png", p3, width=15, height=10, units="cm")
 
+#
+# GLM ----
+CO2_glm <- glmmTMB(uptake ~ carbon, )
+
+
+# Partial residual plots ----
+sim_res <- simulateResiduals(fittedModel = modelCO2)
+plot(sim_res)
+plotResiduals(sim_res, form = CO2$Treatment)
 

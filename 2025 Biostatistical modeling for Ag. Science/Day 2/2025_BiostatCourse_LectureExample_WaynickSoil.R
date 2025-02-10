@@ -6,6 +6,7 @@ library(ggplot2)
 library(dplyr)
 library(agridat)
 library(glmmTMB)
+library(emmeans)
 
 #
 #
@@ -186,6 +187,10 @@ waynick_glm <- glmmTMB(nitro ~ field + carbon +
 
 waynick.soil$GLMfits <- fitted(waynick_glm)
 
+# Model matrix ----
+head(model.matrix(waynick_glm))
+tail(model.matrix(waynick_glm))
+
 # Plot glm residuals ----
 p7 <-
   ggplot(waynick.soil, aes(x=carbon, y=nitro, colour=field)) +
@@ -231,6 +236,103 @@ plot(sim_res)
 
 # Partial residual plot - is carbon explaining leftover variation in
 # model_cat
+
+sim_res <- simulateResiduals(fittedModel = model_cat)
 plotResiduals(sim_res, form = waynick.soil$carbon)
 
+#
+# Model results ----
 
+# ANOVA ----
+anova(model_anc)
+car::Anova(waynick_glm)
+
+# Null model
+model_null <- lm(nitro ~ 1, data=waynick.soil)
+waynick.soil$null <- fitted(model_null)
+
+p_null <-
+  ggplot(waynick.soil, aes(y=nitro, x=rownames(waynick.soil))) +
+  theme_classic() +
+  geom_point(colour="steelblue") +
+  geom_segment(aes(x=rownames(waynick.soil), 
+                   xend = rownames(waynick.soil), 
+                   y=nitro, 
+                   yend = null), 
+               color = "red") +
+  theme(legend.position = "none") +
+  labs(y="Nitrogen content (%)")
+p_null
+ggsave("Waynick_null.png", p_null, width=15, height=10, units="cm")
+
+# Only carbon
+model_C <- lm(nitro ~ carbon, data=waynick.soil)
+waynick.soil$carbfits <- fitted(model_C)
+
+p_c <-
+  ggplot(waynick.soil, aes(y=nitro, x=carbon)) +
+  theme_classic() +
+  geom_point(colour="steelblue") +
+  geom_segment(aes(x=carbon, 
+                   xend = carbon, 
+                   y=nitro, 
+                   yend = carbfits), 
+               color = "red") +
+  geom_smooth(method="lm", se=F, colour="black") + 
+  theme(legend.position = "none") +
+  labs(y="Nitrogen content (%)",
+       x="Carbon content (%)")
+p_c
+#ggsave("Waynick_c.png", p_c, width=15, height=10, units="cm")
+
+# Only field
+waynick.soil$catfits <- fitted(model_cat)
+
+p_field <-
+  ggplot(waynick.soil, aes(y=nitro, x=rownames(waynick.soil))) +
+  theme_classic() +
+  facet_wrap(~field) +
+  geom_point(colour="steelblue") +
+  geom_segment(aes(x=rownames(waynick.soil), 
+                   xend = rownames(waynick.soil), 
+                   y=nitro, 
+                   yend = catfits), 
+               color = "red") +
+  geom_smooth(method="lm", se=F, colour="black") + 
+  theme(legend.position = "none") +
+  labs(y="Nitrogen content (%)")
+p_field
+#ggsave("Waynick_field.png", p_field, width=15, height=10, units="cm")
+
+# Both variables
+waynick.soil$fits <- fitted(model_anc)
+
+p_anc <-
+  ggplot(waynick.soil, aes(y=nitro, x=carbon)) +
+  theme_classic() +
+  geom_point(colour="steelblue") +
+  geom_segment(aes(x=carbon, 
+                   xend = carbon, 
+                   y=nitro, 
+                   yend = fits), 
+               color = "red") +
+  geom_smooth(method="lm", se=F, aes(colour=field)) + 
+  theme(legend.position = "none") +
+  labs(y="Nitrogen content (%)",
+       x="Carbon content (%)")
+p_anc
+#ggsave("Waynick_both.png", p_anc, width=15, height=10, units="cm")
+
+# SUMMARY ----
+summary(model_anc)
+summary(waynick_glm)
+
+# POST-HOC ----
+
+multcomp::cld(emmeans(model_anc, pairwise~field), Letters=letters)
+multcomp::cld(emtrends(model_anc, pairwise~field, var="carbon"), Letters=letters)
+
+multcomp::cld(emmeans(waynick_glm, pairwise~field, type="response"), 
+              Letters=letters)
+multcomp::cld(emtrends(waynick_glm, pairwise~field, var="carbon", type="response"), 
+              Letters=letters)
