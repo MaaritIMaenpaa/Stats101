@@ -1,0 +1,25 @@
+Block	Water	Variety	Yield
+1	Irrigation	BUCK-Charrua	409.3
+2	Irrigation	BUCK-Charrua	311.7
+3	Irrigation	BUCK-Charrua	516.4
+1	Rainfed	BUCK-Charrua	266.3
+2	Rainfed	BUCK-Charrua	252.8
+3	Rainfed	BUCK-Charrua	299.9
+1	Irrigation	LasRosas-INTA	544.9
+2	Irrigation	LasRosas-INTA	445.4
+3	Irrigation	LasRosas-INTA	585.7
+1	Rainfed	LasRosas-INTA	259.3
+2	Rainfed	LasRosas-INTA	358.4
+3	Rainfed	LasRosas-INTA	350.2
+1	Irrigation	Pigue	519.9
+2	Irrigation	Pigue	477
+3	Irrigation	Pigue	624.5
+1	Rainfed	Pigue	340.7
+2	Rainfed	Pigue	296.6
+3	Rainfed	Pigue	327.2
+1	Irrigation	Pro-INTA Puntal	629.5
+2	Irrigation	Pro-INTA Puntal	639
+3	Irrigation	Pro-INTA Puntal	585.7
+1	Rainfed	Pro-INTA Puntal	236.6
+2	Rainfed	Pro-INTA Puntal	335.7
+3	Rainfed	Pro-INTA Puntal	390.5
