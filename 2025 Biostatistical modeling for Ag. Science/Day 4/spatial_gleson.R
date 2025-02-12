@@ -21,7 +21,7 @@ library(ggeffects)
 
 gleson <- read.table("2025 Biostatistical modeling for Ag. Science/Day 4/Square.lattice.Gleson.txt", 
                      header = TRUE, 
-                     sep = "\t") %>%
+                     sep = "\t") |>
   mutate(Replication = as.factor(Replication),
          Yield = as.numeric(Yield))
 
@@ -30,32 +30,36 @@ head(gleson)
 summary(gleson)
 
 # Visualize the data
-gleson %>%
+gleson |>
   ggplot(aes(x = Column, y = Row, fill = Variety)) + 
   geom_tile() + 
   theme_minimal() + 
   facet_wrap(~Replication) +
   labs(title = "Variety Distribution by Row and Column")
 
-gleson %>%
+gleson |>
   ggplot(aes(x = Column, y = Row, fill = Yield)) + 
   geom_tile() + 
   theme_minimal() + 
   facet_wrap(~Replication) +
   labs(title = "Yield Distribution by Row and Column")
 
+# Complete random structure ----
 # Fit the simple mixed linear model using lmer from lme4 package
 # Model without spatial or row/column autocorrelation
 simple_model <- lmer(Yield ~ Variety + 
                        (1 | Replication) + 
                        (1 | Row) + (1 | Column), data = gleson)
 
-# Evaluate the residuals using DHARMa for simple_model
+ # Evaluate the residuals using DHARMa for simple_model
 simple_model_residuals <- simulateResiduals(fittedModel = simple_model)
 plot(simple_model_residuals)
 
 # Summarize the results of simple_model
 summary(simple_model)
+
+# Evaluate anova table 
+car::Anova(simple_model)
 
 # Extract the fitted values and residuals for simple_model
 gleson$fit_simple <- fitted(simple_model)
@@ -79,6 +83,7 @@ ggplot(gleson, aes(x = fit_simple, y = res_simple)) +
        x = "Fitted Values",
        y = "Residuals")
 
+# Spatial autocorrelation structure ----
 # Fit the mixed linear model using lme from nlme package with a spatial autocorrelation structure
 spatial_model_lme <- lme(
   Yield ~ Variety,
@@ -90,31 +95,66 @@ spatial_model_lme <- lme(
 # Summarize the results of spatial_model_lme
 summary(spatial_model_lme)
 
-# Evaluate the residuals using DHARMa for spatial_model_lme
-spatial_model_lme_residuals <- simulateResiduals(fittedModel = spatial_model_lme)
-plot(spatial_model_lme_residuals)
+# Evaluate anova table 
+car::Anova(spatial_model_lme) 
 
+# Evaluate the residuals not using DHARMa because is an spatial model fitted with nlme spatial_model_lme
+qqnorm(spatial_model_lme$residuals)
+qqline(spatial_model_lme$residuals, col = "red")
+plot(spatial_model_lme$fitted, spatial_model_lme$residuals)
+lines(lowess(spatial_model_lme$fitted, spatial_model_lme$residuals), col = "blue")
+
+# Model with spatial autocorrelation but glmmTMB bases ----
 # Fit the spatial linear model using glmmTMB
 spatial_model_glmmtmb <- glmmTMB(
   Yield ~ Variety + (1 | Replication),
   data = gleson,
-  family = gaussian(),
-  dispformula = ~ Longitude + Latitude
+  dispformula = ~ Longitude + Latitude # not exactly the same as lme model
 )
 
 # Summarize the results of spatial_model_glmmtmb
 summary(spatial_model_glmmtmb)
 
+# Evaluate anova table 
+car::Anova(spatial_model_glmmtmb) 
+
 # Evaluate the residuals using DHARMa for spatial_model_glmmtmb
-spatial_model_glmmtmb_residuals <- simulateResiduals(fittedModel = spatial_model_glmmtmb)
+spatial_model_glmmtmb_residuals <- 
+  simulateResiduals(fittedModel = spatial_model_glmmtmb)
 plot(spatial_model_glmmtmb_residuals)
 
-# Calculate marginal effects for simple_model
-marginal_effects_simple <- ggpredict(simple_model, terms = c("Variety"))
 
-# Plot marginal effects for simple_model
-plot(marginal_effects_simple) +
+# Fit the mixed linear model treating Variety as a random effect to extract BLUPs
+blup_model <- lmer(Yield ~ (1 | Variety) + 
+                     (1 | Replication) + 
+                     (1 | Row) + (1 | Column), data = gleson)
+
+# Summarize the results of blup_model
+summary(blup_model)
+
+# Extract the BLUPs for Variety
+blups <- ranef(blup_model)$Variety
+
+# Convert BLUPs to a data frame for easier handling
+blups_df <- as.data.frame(blups)
+colnames(blups_df) <- c("BLUP")
+
+# Plot the distribution of BLUPs
+blups_df |> ggplot(aes(x = BLUP)) +
+  geom_density() +
   theme_minimal() +
-  labs(title = "Marginal Effects of Variety on Yield (Simple Model)",
+  labs(title = "Distribution of BLUPs for Variety",
+       x = "BLUP",
+       y = "Frequency")
+
+# Plot the BLUPs for each Variety
+
+blups_df$Variety <- rownames(blups_df)
+
+blups_df |> ggplot(aes(x = reorder(Variety, BLUP), y = BLUP)) +
+  geom_point() +
+  theme_minimal() +
+  coord_flip() +
+  labs(title = "BLUPs for Each Variety",
        x = "Variety",
-       y = "Predicted Yield")
+       y = "BLUP")
