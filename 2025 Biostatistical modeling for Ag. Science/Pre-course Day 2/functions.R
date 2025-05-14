@@ -16,7 +16,8 @@ calc_stock <- function(soc, bd, depth) { # formals(), the list of arguments that
 }
 
 # Example usage of calc_stock function
-calc_stock(1.7, 1.2, 20)
+calc_stock(soc=1.7, bd=1.2, depth=20)
+
 calc_stock(2.0, 1.3, 20)
 
 # explore the function 
@@ -113,6 +114,7 @@ res_apply <- apply(input, 1, function(row) {
     rf = ifelse(is.na(row["rf"]), 0, row["rf"])  # Replace NA with 0
   )
 }) |> t()
+
 
 # Assign column names
 colnames(res_apply) <- c("soc_t", "soc_ad")
