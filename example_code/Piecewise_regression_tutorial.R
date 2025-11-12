@@ -58,8 +58,24 @@ ggplot(data, aes(x=weed_perc, y=leach_reduction)) +
   geom_point(aes(colour=year)) +
   labs(x="Weed cover (%)", y="N leaching reduction (kgN/ha)") +
   geom_vline(xintercept=bp1, linetype="dashed") +
-  geom_vline(xintercept = bp2, linetype="dashed")
+  geom_vline(xintercept = bp2, linetype="dashed") +
+  geom_segment(aes(x = 0, 
+                   y = intercept1, 
+                   xend = bp1, 
+                   yend = intercept2+slope2*bp1),
+               size = 2, colour="steelblue1") +
+  geom_segment(aes(x = bp1, 
+                   y = intercept2+slope2*bp1, 
+                   xend = bp2, 
+                   yend = intercept3+slope3*bp2),
+               size = 2, colour="steelblue3")+
+  geom_segment(aes(x = bp2, 
+                   y = intercept3+slope3*bp2, 
+                   xend = 35, 
+                   yend = intercept3+slope3*35),
+               size = 2, colour="steelblue4")
 
+  
 #
 #
 #
